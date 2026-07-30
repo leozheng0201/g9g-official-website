@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 250" role="img" aria-labelledby="title description">
+  <title id="title">盛澄策略顧問</title>
+  <desc id="description">Sheng Cheng Strategy Consulting</desc>
+  <rect width="720" height="250" rx="24" fill="#fffefa"/>
+  <g transform="translate(32 26)">
+    <circle cx="92" cy="92" r="78" fill="none" stroke="#3e444d" stroke-width="17"/>
+    <circle cx="92" cy="92" r="50" fill="none" stroke="#3e444d" stroke-width="15"/>
+    <circle cx="92" cy="92" r="21" fill="none" stroke="#3e444d" stroke-width="12"/>
+    <path d="M94 90 166 48l-11 77-21-18-37 49-18-12 36-50Z" fill="#c9a23b" stroke="#fffefa" stroke-width="6" stroke-linejoin="round"/>
+  </g>
+  <text x="238" y="105" fill="#3e444d" font-family="Arial, Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" font-size="47" font-weight="500" letter-spacing="8">盛澄策略顧問</text>
+  <text x="241" y="158" fill="#667069" font-family="Arial, sans-serif" font-size="24" letter-spacing="1.8">Sheng Cheng Strategy Consulting</text>
+  <path d="M238 190h420" stroke="#c9a23b" stroke-width="3"/>
+</svg>

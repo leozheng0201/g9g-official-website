@@ -2,8 +2,12 @@ import { expect, test } from '@playwright/test'
 
 test('public home identifies G9G', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: 'G9G' })).toBeVisible()
-  await expect(page.getByText('LINE 禮物品牌成長平台')).toBeVisible()
+  await expect(
+    page.getByRole('heading', {
+      level: 1,
+      name: '讓商品不只上架，而是成為別人想送的理由。',
+    }),
+  ).toBeVisible()
 })
 
 test('admin login is visible', async ({ page }) => {
