@@ -34,7 +34,7 @@ export function applyAttributionCookies(
   request: NextRequest,
   response: NextResponse,
 ): NextResponse {
-  const secret = process.env.RATE_LIMIT_FINGERPRINT_SECRET
+  const secret = process.env.GROWTH_AUDIT_FINGERPRINT_SECRET
   if (!secret || !isEligibleRequest(request)) return response
 
   const value = serializeAttributionCookie(buildTouch(request), secret)
