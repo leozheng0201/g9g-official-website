@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --g9g-ink: #151a17;
+  --g9g-paper: #fffdf8;
+  --g9g-surface: #f4f0e7;
+  --g9g-muted: #687069;
+  --g9g-line: #d8ddd8;
+  --g9g-green: #06c755;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--g9g-surface); }
+body {
+  margin: 0;
+  color: var(--g9g-ink);
+  background: var(--g9g-paper);
+  font-family: Arial, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
