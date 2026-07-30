@@ -45,7 +45,7 @@
     "supabase": "latest",
     "tailwindcss": "4.3.3",
     "tsx": "latest",
-    "typescript": "7.0.2",
+    "typescript": "6.0.3",
     "vite-tsconfig-paths": "latest",
     "vitest": "4.1.10"
   }
