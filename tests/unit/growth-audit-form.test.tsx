@@ -32,6 +32,20 @@ describe('growth audit preview', () => {
     expect(result.success).toBe(false)
   })
 
+  it('requires an HTTPS brand link', () => {
+    const result = growthAuditPreviewSchema.safeParse({
+      contactName: '王小明',
+      brandName: '測試品牌',
+      phone: '0912345678',
+      email: 'owner@example.com',
+      brandUrl: 'http://example.com',
+      privacyAccepted: true,
+      website: '',
+    })
+
+    expect(result.success).toBe(false)
+  })
+
   it('shows an explicit preview notice instead of fake submission success', () => {
     render(<AuditPreviewForm />)
 
