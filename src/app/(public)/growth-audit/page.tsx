@@ -24,7 +24,7 @@ export default function GrowthAuditPage() {
           <div>
             <h2 className="text-3xl font-black">第一階段申請</h2>
             <p className="mt-4 text-muted">只需要聯絡人、品牌、手機、Email 與品牌連結。詳細營運資料會在初步判斷後再提供問卷。</p>
-            <p className="mt-5 rounded-card bg-soft p-4 font-bold">目前為前台 Preview；表單只檢查欄位，不會送出或儲存資料。</p>
+            <p className="mt-5 rounded-card bg-soft p-4 font-bold">送出後會寄發收件確認信。此信只代表資料成功送達，不代表申請已通過或服務名額已成立。</p>
           </div>
           <AuditPreviewForm />
         </div>
