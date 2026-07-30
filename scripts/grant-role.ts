@@ -27,31 +27,6 @@ function readArguments(args: string[]): { email: string; role: AppRole } {
   return { email, role: role as AppRole }
 }
 
-async function findUserByEmail(
-  supabase: ReturnType<typeof createClient>,
-  email: string,
-): Promise<User | null> {
-  const perPage = 1000
-
-  for (let page = 1; page <= 100; page += 1) {
-    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage })
-    if (error) {
-      throw error
-    }
-
-    const user = data.users.find((candidate) => candidate.email?.toLowerCase() === email)
-    if (user) {
-      return user
-    }
-
-    if (data.users.length < perPage) {
-      return null
-    }
-  }
-
-  return null
-}
-
 async function main(): Promise<void> {
   const { email, role } = readArguments(process.argv.slice(2))
   const env = parseServerEnv(process.env)
@@ -61,7 +36,21 @@ async function main(): Promise<void> {
     { auth: { autoRefreshToken: false, persistSession: false } },
   )
 
-  const user = await findUserByEmail(supabase, email)
+  const perPage = 1000
+  let user: User | null = null
+
+  for (let page = 1; page <= 100; page += 1) {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage })
+    if (error) {
+      throw error
+    }
+
+    user = data.users.find((candidate) => candidate.email?.toLowerCase() === email) ?? null
+    if (user || data.users.length < perPage) {
+      break
+    }
+  }
+
   if (!user) {
     throw new Error('User not found. Ask the user to sign in once before granting a role.')
   }
