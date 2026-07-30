@@ -17,14 +17,17 @@ describe('hasAnyRole', () => {
 })
 
 describe('safeNextPath', () => {
-  it('keeps internal application paths', () => {
+  it('keeps internal admin paths', () => {
     expect(safeNextPath('/admin/content?status=draft')).toBe('/admin/content?status=draft')
   })
 
-  it.each(['https://attacker.example', '//attacker.example', 'admin']) (
-    'rejects external or malformed destination %s',
-    (value) => {
-      expect(safeNextPath(value)).toBe('/admin')
-    },
-  )
+  it.each([
+    'https://attacker.example',
+    '//attacker.example',
+    '/\\attacker.example',
+    '/contact',
+    'admin',
+  ])('rejects non-admin or malformed destination %s', (value) => {
+    expect(safeNextPath(value)).toBe('/admin')
+  })
 })
