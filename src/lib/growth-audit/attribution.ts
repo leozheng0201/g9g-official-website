@@ -1,3 +1,5 @@
+import { createHmac, timingSafeEqual } from 'node:crypto'
+
 const approvedKeys = [
   'utm_source',
   'utm_medium',
@@ -17,7 +19,6 @@ function parseTouch(raw: string): GrowthAuditAttribution {
   try {
     const parsed: unknown = JSON.parse(raw)
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
-
     const source = parsed as Record<string, unknown>
     const result: GrowthAuditAttribution = {}
 
@@ -35,9 +36,42 @@ function parseTouch(raw: string): GrowthAuditAttribution {
   }
 }
 
-export function parseAttributionCookies(firstTouchCookie: string, lastTouchCookie: string) {
+function signature(payload: string, secret: string): string {
+  return createHmac('sha256', secret).update(payload).digest('base64url')
+}
+
+export function serializeAttributionCookie(
+  touch: GrowthAuditAttribution,
+  secret: string,
+): string {
+  if (!secret) throw new Error('attribution secret is required')
+  const payload = Buffer.from(JSON.stringify(touch), 'utf8').toString('base64url')
+  return `${payload}.${signature(payload, secret)}`
+}
+
+function parseSignedTouch(raw: string, secret: string): GrowthAuditAttribution {
+  const [payload, providedSignature] = raw.split('.')
+  if (!payload || !providedSignature) return {}
+  const expectedSignature = signature(payload, secret)
+  const provided = Buffer.from(providedSignature)
+  const expected = Buffer.from(expectedSignature)
+  if (provided.length !== expected.length || !timingSafeEqual(provided, expected)) return {}
+
+  try {
+    return parseTouch(Buffer.from(payload, 'base64url').toString('utf8'))
+  } catch {
+    return {}
+  }
+}
+
+export function parseAttributionCookies(
+  firstTouchCookie: string,
+  lastTouchCookie: string,
+  secret?: string,
+) {
+  const parse = secret ? (raw: string) => parseSignedTouch(raw, secret) : parseTouch
   return {
-    firstTouch: parseTouch(firstTouchCookie),
-    lastTouch: parseTouch(lastTouchCookie),
+    firstTouch: parse(firstTouchCookie),
+    lastTouch: parse(lastTouchCookie),
   }
 }
