@@ -64,11 +64,12 @@ export async function submitGrowthAudit(
   const attribution = parseAttributionCookies(
     cookieStore.get('g9g_first_touch')?.value ?? '',
     cookieStore.get('g9g_last_touch')?.value ?? '',
+    env.GROWTH_AUDIT_FINGERPRINT_SECRET,
   )
   const requestFingerprint = createRequestFingerprint({
     ipAddress,
     userAgent,
-    secret: env.RATE_LIMIT_FINGERPRINT_SECRET,
+    secret: env.GROWTH_AUDIT_FINGERPRINT_SECRET,
   })
 
   const appendEvent = async (event: {
@@ -90,8 +91,8 @@ export async function submitGrowthAudit(
     lastTouch: attribution.lastTouch,
     requestFingerprint,
     userAgent,
-    emailHash: async (email) => hmac(email, env.RATE_LIMIT_FINGERPRINT_SECRET),
-    duplicateKey: async (value) => hmac(value, env.RATE_LIMIT_FINGERPRINT_SECRET),
+    emailHash: async (email) => hmac(email, env.GROWTH_AUDIT_FINGERPRINT_SECRET),
+    duplicateKey: async (value) => hmac(value, env.GROWTH_AUDIT_FINGERPRINT_SECRET),
     checkRateLimit: async (input) =>
       checkGrowthAuditRateLimit(input, {
         findRecent: async (since) => {
