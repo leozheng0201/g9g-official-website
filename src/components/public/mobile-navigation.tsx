@@ -13,6 +13,7 @@ export function MobileNavigation() {
 
   useEffect(() => {
     if (!open) return
+    const trigger = triggerRef.current
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     firstLinkRef.current?.focus()
@@ -23,7 +24,7 @@ export function MobileNavigation() {
     return () => {
       document.body.style.overflow = previousOverflow
       document.removeEventListener('keydown', onKeyDown)
-      triggerRef.current?.focus()
+      trigger?.focus()
     }
   }, [open])
 
