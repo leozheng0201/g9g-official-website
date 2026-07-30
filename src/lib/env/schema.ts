@@ -8,6 +8,10 @@ const publicSchema = z.object({
 
 const serverSchema = publicSchema.extend({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  RESEND_API_KEY: z.string().min(1),
+  GROWTH_AUDIT_FROM_EMAIL: z.string().email(),
+  GROWTH_AUDIT_ADMIN_EMAIL: z.string().email(),
+  GROWTH_AUDIT_FINGERPRINT_SECRET: z.string().min(32),
 })
 
 export type PublicEnv = z.infer<typeof publicSchema>
