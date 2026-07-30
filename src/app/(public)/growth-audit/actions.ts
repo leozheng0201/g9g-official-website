@@ -18,8 +18,6 @@ export type GrowthAuditActionState =
   | { status: 'idle' }
   | { status: 'error'; message: string; fieldErrors?: Record<string, string> }
 
-export const initialGrowthAuditActionState: GrowthAuditActionState = { status: 'idle' }
-
 function hmac(value: string, secret: string): string {
   return createHmac('sha256', secret).update(value).digest('hex')
 }
