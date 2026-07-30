@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { AuditPreviewForm } from '@/components/public/audit-preview-form'
+import { AuditPreviewForm, type GrowthAuditFormAction } from '@/components/public/audit-preview-form'
 import { growthAuditSubmissionSchema } from '@/lib/growth-audit/schema'
 
 const validInput = {
@@ -12,6 +12,8 @@ const validInput = {
   privacyAccepted: true,
   website: '',
 }
+
+const idleAction: GrowthAuditFormAction = async () => ({ status: 'idle' })
 
 describe('production growth audit form', () => {
   it('accepts the approved first-stage fields', () => {
@@ -25,7 +27,7 @@ describe('production growth audit form', () => {
   })
 
   it('renders a real submission form without preview-only copy', () => {
-    const { container } = render(<AuditPreviewForm />)
+    const { container } = render(<AuditPreviewForm action={idleAction} />)
 
     expect(screen.getByRole('button', { name: '送出品牌成長健檢申請' })).toBeInTheDocument()
     expect(screen.getByLabelText('聯絡人姓名')).toBeRequired()
