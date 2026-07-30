@@ -5,6 +5,14 @@ G9G 官方網站與專屬內容管理後台。
 > **G9G｜LINE 禮物品牌成長平台**  
 > 讓品牌成長，不只是把商品上架。
 
+## 分支策略
+
+- `main`：正式環境
+- `develop`：整合與 Preview 驗收環境
+- `feature/*`：獨立功能開發分支
+
+所有功能必須先經 Pull Request 與 quality gates，不能直接在 `main` 開發。
+
 ## Foundation 範圍
 
 目前 Foundation 建立：

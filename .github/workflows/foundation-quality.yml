@@ -17,9 +17,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-      - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          cache: npm
+      - run: npm ci
       - name: Start Supabase and export application environment
         run: |
           npm run db:start
@@ -47,10 +46,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-      - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          cache: npm
+      - run: npm ci
       - run: npm run db:start
+      - run: npm run db:reset
       - run: npm run db:test
       - run: npx supabase db lint
       - if: always()
