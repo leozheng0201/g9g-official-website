@@ -12,16 +12,18 @@ create table public.growth_audit_applications (
       'spam'
     )
   ),
-  contact_name text not null,
-  brand_name text not null,
-  phone text not null,
-  email text not null,
-  brand_url text not null,
+  contact_name text not null check (length(trim(contact_name)) between 1 and 80),
+  brand_name text not null check (length(trim(brand_name)) between 1 and 120),
+  phone text not null check (phone ~ '^\+8869[0-9]{8}$'),
+  email text not null check (email = lower(email) and length(email) <= 254),
+  brand_url text not null check (brand_url ~ '^https://'),
   privacy_accepted_at timestamptz not null,
+  consent_version text not null check (length(trim(consent_version)) > 0),
   first_touch jsonb not null default '{}'::jsonb,
   last_touch jsonb not null default '{}'::jsonb,
-  source_ip_hash text,
-  user_agent text,
+  email_hash text not null,
+  request_fingerprint text not null,
+  user_agent text not null default '',
   duplicate_key text not null,
   internal_note text,
   contacted_at timestamptz,
@@ -34,7 +36,7 @@ create table public.growth_audit_events (
   id uuid primary key default gen_random_uuid(),
   application_id uuid not null references public.growth_audit_applications(id) on delete cascade,
   actor_id uuid references public.profiles(id),
-  event_type text not null,
+  event_type text not null check (length(trim(event_type)) > 0),
   from_status text,
   to_status text,
   note text,
@@ -47,6 +49,12 @@ create index growth_audit_applications_status_created_idx
 
 create index growth_audit_applications_duplicate_created_idx
   on public.growth_audit_applications (duplicate_key, created_at desc);
+
+create index growth_audit_applications_email_created_idx
+  on public.growth_audit_applications (email_hash, created_at desc);
+
+create index growth_audit_applications_fingerprint_created_idx
+  on public.growth_audit_applications (request_fingerprint, created_at desc);
 
 create index growth_audit_events_application_created_idx
   on public.growth_audit_events (application_id, created_at desc);
