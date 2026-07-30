@@ -69,7 +69,10 @@ export function parseAttributionCookies(
   lastTouchCookie: string,
   secret?: string,
 ) {
-  const parse = secret ? (raw: string) => parseSignedTouch(raw, secret) : parseTouch
+  const resolvedSecret = secret ?? process.env.RATE_LIMIT_FINGERPRINT_SECRET
+  const parse = resolvedSecret
+    ? (raw: string) => parseSignedTouch(raw, resolvedSecret)
+    : parseTouch
   return {
     firstTouch: parse(firstTouchCookie),
     lastTouch: parse(lastTouchCookie),
