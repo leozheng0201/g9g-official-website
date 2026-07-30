@@ -20,7 +20,7 @@ export default function WhyG9GPage() {
     <>
       <PageHero eyebrow="WHY G9G" title="為什麼選擇 G9G" description="送禮電商不是一般購物流程的複製，而是一套同時處理關係、時機與收禮體驗的決策系統。" />
       <Container className="py-16 sm:py-20">
-        <Breadcrumbs items={[{ label: '為什麼選擇 G9G' }]} />
+        <Breadcrumbs currentPath={publicRoutes.whyG9g} items={[{ label: '為什麼選擇 G9G' }]} />
         <SectionHeading title="一般電商與送禮電商，面對的是不同的購買理由。" />
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           <article className="rounded-card border border-line bg-surface p-7">
