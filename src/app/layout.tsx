@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="zh-Hant-TW">
+    <html lang="zh-Hant-TW" data-scroll-behavior="smooth">
       <body>{children}</body>
     </html>
   )
