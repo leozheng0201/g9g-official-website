@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --g9g-ink: #151a17;
+  --g9g-paper: #fffdf8;
+  --g9g-surface: #f4f0e7;
+  --g9g-muted: #687069;
+  --g9g-line: #d8ddd8;
+  --g9g-green: #06c755;
+  --g9g-green-dark: #04a847;
+  --g9g-warning: #a86500;
+  --g9g-danger: #b42318;
+  --g9g-radius-control: 0.25rem;
+  --g9g-radius-card: 0.5rem;
+  --g9g-shadow-control: 4px 4px 0 var(--g9g-ink);
+  --g9g-shadow-brand: 5px 5px 0 var(--g9g-green);
+}
+
+@theme inline {
+  --color-ink: var(--g9g-ink);
+  --color-paper: var(--g9g-paper);
+  --color-surface: var(--g9g-surface);
+  --color-muted: var(--g9g-muted);
+  --color-line: var(--g9g-line);
+  --color-brand: var(--g9g-green);
+  --color-brand-dark: var(--g9g-green-dark);
+  --color-warning: var(--g9g-warning);
+  --color-danger: var(--g9g-danger);
+  --radius-control: var(--g9g-radius-control);
+  --radius-card: var(--g9g-radius-card);
+  --shadow-control: var(--g9g-shadow-control);
+  --shadow-brand: var(--g9g-shadow-brand);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--g9g-surface);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--g9g-ink);
+  background: var(--g9g-paper);
+  font-family: Arial, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  line-height: 1.6;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline-color: var(--g9g-ink);
+}
