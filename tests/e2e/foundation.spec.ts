@@ -22,3 +22,8 @@ test('anonymous admin request redirects to login', async ({ page }) => {
   await page.goto('/admin')
   await expect(page).toHaveURL(/\/admin\/login\?next=%2Fadmin$/)
 })
+
+test('anonymous growth audit admin request redirects to login', async ({ page }) => {
+  await page.goto('/admin/growth-audits')
+  await expect(page).toHaveURL(/\/admin\/login\?next=%2Fadmin%2Fgrowth-audits$/)
+})

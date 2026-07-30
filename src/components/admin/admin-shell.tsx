@@ -9,6 +9,8 @@ type AdminShellProps = {
 }
 
 export function AdminShell({ children, email, roles }: AdminShellProps) {
+  const canManageGrowthAudits = roles.includes('super_admin') || roles.includes('service')
+
   return (
     <div className="min-h-screen bg-surface text-ink">
       <header className="border-b border-line bg-paper px-5 py-4">
@@ -22,10 +24,15 @@ export function AdminShell({ children, email, roles }: AdminShellProps) {
       </header>
       <div className="mx-auto grid max-w-7xl gap-6 px-5 py-6 md:grid-cols-[220px_1fr]">
         <aside className="rounded-card border border-line bg-paper p-4">
-          <nav aria-label="後台主導覽">
+          <nav aria-label="後台主導覽" className="grid gap-2">
             <Link href="/admin" className="block rounded-control bg-surface px-3 py-2 font-bold">
               Dashboard
             </Link>
+            {canManageGrowthAudits && (
+              <Link href="/admin/growth-audits" className="block rounded-control px-3 py-2 font-bold hover:bg-surface">
+                品牌成長健檢
+              </Link>
+            )}
           </nav>
         </aside>
         <main>{children}</main>

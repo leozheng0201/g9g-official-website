@@ -1,10 +1,19 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, type FormEvent } from 'react'
+import { useActionState } from 'react'
+import { useFormStatus } from 'react-dom'
 import { Button } from '@/components/ui/button'
-import { growthAuditPreviewSchema } from '@/lib/validation/growth-audit-preview'
 import { publicRoutes } from '@/lib/routes/public'
+
+export type GrowthAuditFormState =
+  | { status: 'idle' }
+  | { status: 'error'; message: string; fieldErrors?: Record<string, string> }
+
+export type GrowthAuditFormAction = (
+  previousState: GrowthAuditFormState,
+  formData: FormData,
+) => Promise<GrowthAuditFormState>
 
 const fields = [
   { name: 'contactName', label: '聯絡人姓名', type: 'text', autoComplete: 'name' },
@@ -14,44 +23,21 @@ const fields = [
   { name: 'brandUrl', label: '品牌連結', type: 'url', autoComplete: 'url' },
 ] as const
 
-export function AuditPreviewForm() {
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [validPreview, setValidPreview] = useState(false)
+function SubmitButton() {
+  const { pending } = useFormStatus()
+  return (
+    <Button type="submit" disabled={pending} className="mt-6 w-full sm:w-auto">
+      {pending ? '送出中…' : '送出品牌成長健檢申請'}
+    </Button>
+  )
+}
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setValidPreview(false)
-    const form = event.currentTarget
-    const data = new FormData(form)
-    const result = growthAuditPreviewSchema.safeParse({
-      contactName: data.get('contactName'),
-      brandName: data.get('brandName'),
-      phone: data.get('phone'),
-      email: data.get('email'),
-      brandUrl: data.get('brandUrl'),
-      privacyAccepted: data.get('privacyAccepted') === 'on',
-      website: data.get('website') ?? '',
-    })
-
-    if (!result.success) {
-      const nextErrors: Record<string, string> = {}
-      for (const issue of result.error.issues) {
-        const key = String(issue.path[0] ?? 'form')
-        nextErrors[key] ??= issue.message
-      }
-      setErrors(nextErrors)
-      const firstKey = Object.keys(nextErrors)[0]
-      const firstField = form.elements.namedItem(firstKey)
-      if (firstField instanceof HTMLElement) firstField.focus()
-      return
-    }
-
-    setErrors({})
-    setValidPreview(true)
-  }
+export function AuditPreviewForm({ action }: { action: GrowthAuditFormAction }) {
+  const [state, formAction] = useActionState(action, { status: 'idle' } as GrowthAuditFormState)
+  const errors = state.status === 'error' ? (state.fieldErrors ?? {}) : {}
 
   return (
-    <form onSubmit={onSubmit} noValidate className="rounded-[2rem] border border-line bg-paper p-6 sm:p-8">
+    <form action={formAction} className="rounded-[2rem] border border-line bg-paper p-6 sm:p-8">
       <div className="grid gap-5 sm:grid-cols-2">
         {fields.map((field) => {
           const error = errors[field.name]
@@ -63,6 +49,7 @@ export function AuditPreviewForm() {
                 name={field.name}
                 type={field.type}
                 autoComplete={field.autoComplete}
+                required
                 aria-invalid={Boolean(error)}
                 aria-describedby={error ? `${field.name}-error` : undefined}
                 className="min-h-12 w-full rounded-control border border-line bg-paper px-4 focus:border-ink"
@@ -78,15 +65,21 @@ export function AuditPreviewForm() {
       </div>
       <div className="mt-5">
         <label className="flex items-start gap-3">
-          <input name="privacyAccepted" type="checkbox" className="mt-1 size-5" aria-describedby={errors.privacyAccepted ? 'privacy-error' : undefined} />
+          <input
+            name="privacyAccepted"
+            type="checkbox"
+            required
+            className="mt-1 size-5"
+            aria-describedby={errors.privacyAccepted ? 'privacy-error' : undefined}
+          />
           <span>我已閱讀並同意<Link href={publicRoutes.privacy} className="font-bold underline">隱私權政策</Link>。</span>
         </label>
         {errors.privacyAccepted && <p id="privacy-error" className="mt-2 text-sm text-danger">{errors.privacyAccepted}</p>}
       </div>
-      <Button type="submit" className="mt-6 w-full sm:w-auto">檢查申請資料</Button>
-      {validPreview && (
-        <p role="status" className="mt-5 rounded-card border border-brand-dark bg-soft p-4 font-bold">
-          目前為 Preview，申請資料尚未送出或儲存。正式送出功能將在品牌成長健檢系統完成後啟用。
+      <SubmitButton />
+      {state.status === 'error' && (
+        <p role="alert" className="mt-5 rounded-card border border-danger bg-paper p-4 font-bold text-danger">
+          {state.message}
         </p>
       )}
     </form>
