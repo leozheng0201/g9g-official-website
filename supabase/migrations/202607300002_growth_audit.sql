@@ -69,7 +69,7 @@ revoke all on table public.growth_audit_events from anon, authenticated;
 revoke all on function public.can_manage_growth_audits() from public;
 
 grant select, update on table public.growth_audit_applications to authenticated;
-grant select, insert on table public.growth_audit_events to authenticated;
+grant select on table public.growth_audit_events to authenticated;
 grant execute on function public.can_manage_growth_audits() to authenticated;
 
 create policy growth_audit_applications_select_staff
@@ -90,9 +90,3 @@ on public.growth_audit_events
 for select
 to authenticated
 using (public.can_manage_growth_audits());
-
-create policy growth_audit_events_insert_staff
-on public.growth_audit_events
-for insert
-to authenticated
-with check (public.can_manage_growth_audits() and actor_id = auth.uid());
