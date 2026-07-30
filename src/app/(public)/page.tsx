@@ -7,18 +7,23 @@ import { HeroStrategyBoard } from '@/components/public/hero-strategy-board'
 import { JsonLd } from '@/components/public/json-ld'
 import { PageHero } from '@/components/public/page-hero'
 import { SectionHeading } from '@/components/public/section-heading'
-import { contentEntries, giftScenes, growthPillars, growthServices, painPoints, processSteps } from '@/content/home'
 import { featuredCases } from '@/content/cases'
+import { contentEntries, giftScenes, growthPillars, growthServices, painPoints, processSteps } from '@/content/home'
 import { siteConfig } from '@/content/site'
 import { publicRoutes } from '@/lib/routes/public'
 import { createPageMetadata } from '@/lib/seo/metadata'
 import { buildOrganizationSchema, buildWebSiteSchema } from '@/lib/seo/schema'
 
-export const metadata = createPageMetadata({
+const baseMetadata = createPageMetadata({
   title: 'G9G｜LINE 禮物品牌成長平台',
   description: siteConfig.heroDescription,
   path: publicRoutes.home,
 })
+
+export const metadata = {
+  ...baseMetadata,
+  title: { absolute: 'G9G｜LINE 禮物品牌成長平台' },
+}
 
 const sectionClass = 'py-16 sm:py-20'
 
@@ -56,6 +61,12 @@ export default function HomePage() {
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {growthPillars.map((item) => <InfoCard key={item.title} {...item} />)}
           </div>
+          <Link
+            href={publicRoutes.whyG9g}
+            className="mt-7 inline-block font-bold underline decoration-brand decoration-4 underline-offset-4"
+          >
+            了解 G9G 與一般代操的差異
+          </Link>
         </Container>
       </section>
 
