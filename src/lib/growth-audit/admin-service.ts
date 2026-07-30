@@ -1,5 +1,3 @@
-import 'server-only'
-
 import type { GrowthAuditStatus } from '@/lib/growth-audit/status'
 
 const transitions: Readonly<Record<GrowthAuditStatus, readonly GrowthAuditStatus[]>> = {
