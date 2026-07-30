@@ -8,6 +8,8 @@ test-results
 .env.*.local
 !.env.example
 .supabase
+supabase/.temp
+supabase/.branches
 .worktrees/
 .DS_Store
 *.log
