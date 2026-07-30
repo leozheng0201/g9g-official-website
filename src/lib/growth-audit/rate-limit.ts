@@ -19,7 +19,11 @@ export type GrowthAuditRateLimitRepository = {
 }
 
 export type GrowthAuditRateLimitResult =
-  | { allowed: true }
+  | {
+      allowed: true
+      reason?: never
+      retryAfterSeconds?: never
+    }
   | {
       allowed: false
       reason: GrowthAuditRateLimitReason
