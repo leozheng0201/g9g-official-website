@@ -18,7 +18,7 @@ export default function AboutPage() {
     <>
       <PageHero eyebrow="ABOUT G9G" title="關於 G9G" description="G9G 是盛澄策略顧問聚焦 LINE 禮物品牌成長的服務品牌。" />
       <Container className="py-16 sm:py-20">
-        <Breadcrumbs items={[{ label: '關於 G9G' }]} />
+        <Breadcrumbs currentPath={publicRoutes.about} items={[{ label: '關於 G9G' }]} />
         <SectionHeading title="讓品牌成長，不只是把商品上架。" description="我們不只協助商品上架，而是從商品、送禮場景、價格帶、檔期、版位與轉換，判斷品牌如何在 LINE 禮物建立可持續的成長方法。" />
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {[
