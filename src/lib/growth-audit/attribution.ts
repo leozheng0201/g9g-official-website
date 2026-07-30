@@ -69,7 +69,7 @@ export function parseAttributionCookies(
   lastTouchCookie: string,
   secret?: string,
 ) {
-  const resolvedSecret = secret ?? process.env.RATE_LIMIT_FINGERPRINT_SECRET
+  const resolvedSecret = secret ?? process.env.GROWTH_AUDIT_FINGERPRINT_SECRET
   const parse = resolvedSecret
     ? (raw: string) => parseSignedTouch(raw, resolvedSecret)
     : parseTouch
