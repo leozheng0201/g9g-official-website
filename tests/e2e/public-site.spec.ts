@@ -38,6 +38,14 @@ test('homepage audit CTA reaches the audit page', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1, name: '品牌成長健檢' })).toBeVisible()
 })
 
+test('growth audit success page is visible and noindex', async ({ page }) => {
+  await page.goto('/growth-audit/success')
+  await expect(page.getByRole('heading', { level: 1, name: '品牌成長健檢申請已送出' })).toBeVisible()
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/)
+  const body = await page.locator('body').innerText()
+  expect(body).toContain('不代表一定通過審核')
+})
+
 test('public pages do not expose prohibited copy', async ({ page }) => {
   for (const route of routes) {
     await page.goto(route)
