@@ -38,7 +38,7 @@ describe('public pages', () => {
     expect(container.querySelectorAll('h1')).toHaveLength(1)
   })
 
-  it('explains the G9G and 盛澄 relationship with the official brand asset', () => {
+  it('explains the G9G and 盛澄 relationship with a static brand asset', () => {
     render(<AboutPage />)
     expect(
       screen.getByText(/G9G 是盛澄策略顧問聚焦 LINE 禮物品牌成長的服務品牌/),
@@ -46,7 +46,7 @@ describe('public pages', () => {
     expect(screen.getByText('莊又丞')).toBeInTheDocument()
     expect(
       screen.getByRole('img', { name: '盛澄策略顧問 Sheng Cheng Strategy Consulting' }),
-    ).toHaveAttribute('src', '/brand/sheng-cheng-logo.webp')
+    ).toHaveAttribute('src', '/brand/sheng-cheng-logo.svg')
   })
 
   it('publishes all approved operations prices and boundaries', () => {
