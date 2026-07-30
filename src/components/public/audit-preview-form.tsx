@@ -3,9 +3,17 @@
 import Link from 'next/link'
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
-import { submitGrowthAudit, initialGrowthAuditActionState } from '@/app/(public)/growth-audit/actions'
 import { Button } from '@/components/ui/button'
 import { publicRoutes } from '@/lib/routes/public'
+
+export type GrowthAuditFormState =
+  | { status: 'idle' }
+  | { status: 'error'; message: string; fieldErrors?: Record<string, string> }
+
+export type GrowthAuditFormAction = (
+  previousState: GrowthAuditFormState,
+  formData: FormData,
+) => Promise<GrowthAuditFormState>
 
 const fields = [
   { name: 'contactName', label: '聯絡人姓名', type: 'text', autoComplete: 'name' },
@@ -24,8 +32,8 @@ function SubmitButton() {
   )
 }
 
-export function AuditPreviewForm() {
-  const [state, formAction] = useActionState(submitGrowthAudit, initialGrowthAuditActionState)
+export function AuditPreviewForm({ action }: { action: GrowthAuditFormAction }) {
+  const [state, formAction] = useActionState(action, { status: 'idle' } as GrowthAuditFormState)
   const errors = state.status === 'error' ? (state.fieldErrors ?? {}) : {}
 
   return (
