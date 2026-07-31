@@ -1,6 +1,6 @@
 begin;
 
-select plan(38);
+select plan(40);
 
 select has_table('public', 'content_items', 'content_items exists');
 select has_table('public', 'content_revisions', 'content_revisions exists');
