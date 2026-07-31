@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import { deleteMediaAction, updateMediaAction, uploadMediaAction } from '@/app/admin/media/actions'
 import { requireCmsUser } from '@/lib/cms/auth'
 import { createServiceRoleSupabaseClient } from '@/lib/supabase/service-role'
@@ -13,7 +15,10 @@ export default async function AdminMediaPage({ searchParams }: { searchParams: P
 
   return (
     <main className="mx-auto max-w-6xl px-5 py-10">
-      <div className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-xs font-black tracking-[0.16em] text-brand">CMS</p><h1 className="mt-2 text-3xl font-black">媒體庫</h1></div><a href="/admin/content" className="font-bold text-brand">返回內容總覽</a></div>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div><p className="text-xs font-black tracking-[0.16em] text-brand">CMS</p><h1 className="mt-2 text-3xl font-black">媒體庫</h1></div>
+        <Link href="/admin/content" className="font-bold text-brand">返回內容總覽</Link>
+      </div>
       <form action={uploadMediaAction} className="mt-8 grid gap-4 rounded-card border border-line bg-paper p-6 sm:grid-cols-[1fr_1fr_auto]">
         <label className="font-bold">檔案<input name="file" type="file" required className="mt-2 block w-full" /></label>
         <label className="font-bold">圖片替代文字<input name="altText" className="mt-2 w-full rounded border border-line p-3 font-normal" /></label>
