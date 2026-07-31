@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 import type { ContentBlock } from '@/lib/cms/types'
 
 export type ContentRendererProps = {
@@ -12,6 +14,10 @@ function safeHref(href: string) {
   } catch {
     return href.startsWith('/') && !href.startsWith('//') ? href : '#'
   }
+}
+
+function CmsImage({ src, alt }: { src: string; alt: string }) {
+  return <Image src={src} alt={alt} width={1600} height={900} sizes="(max-width: 768px) 100vw, 1200px" className="h-auto w-full rounded-card" unoptimized />
 }
 
 export function ContentRenderer({ blocks, mediaUrl = () => null }: ContentRendererProps) {
@@ -29,11 +35,11 @@ export function ContentRenderer({ blocks, mediaUrl = () => null }: ContentRender
             return <p key={block.id} className="whitespace-pre-line text-lg leading-8 text-muted">{block.text}</p>
           case 'image': {
             const src = mediaUrl(block.mediaId)
-            return src ? <figure key={block.id}><img src={src} alt={block.alt} className="h-auto w-full rounded-card" loading="lazy" />{block.caption ? <figcaption className="mt-2 text-sm text-muted">{block.caption}</figcaption> : null}</figure> : null
+            return src ? <figure key={block.id}><CmsImage src={src} alt={block.alt} />{block.caption ? <figcaption className="mt-2 text-sm text-muted">{block.caption}</figcaption> : null}</figure> : null
           }
           case 'image_text': {
             const src = mediaUrl(block.mediaId)
-            return <section key={block.id} className="grid gap-6 md:grid-cols-2">{block.imagePosition === 'left' && src ? <img src={src} alt={block.alt} className="h-auto w-full rounded-card" loading="lazy" /> : null}<p className="whitespace-pre-line text-lg leading-8 text-muted">{block.text}</p>{block.imagePosition === 'right' && src ? <img src={src} alt={block.alt} className="h-auto w-full rounded-card" loading="lazy" /> : null}</section>
+            return <section key={block.id} className="grid gap-6 md:grid-cols-2">{block.imagePosition === 'left' && src ? <CmsImage src={src} alt={block.alt} /> : null}<p className="whitespace-pre-line text-lg leading-8 text-muted">{block.text}</p>{block.imagePosition === 'right' && src ? <CmsImage src={src} alt={block.alt} /> : null}</section>
           }
           case 'quote':
             return <blockquote key={block.id} className="rounded-card border-l-4 border-brand bg-paper p-6 text-xl font-bold"><p>{block.text}</p>{block.attribution ? <footer className="mt-3 text-sm font-normal text-muted">— {block.attribution}</footer> : null}</blockquote>
