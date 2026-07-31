@@ -73,11 +73,25 @@ async function transitionAction(formData: FormData, action: Parameters<typeof tr
   revalidatePath(`/admin/content/${item.content_type}/${id}`)
 }
 
-export const submitReviewAction = (formData: FormData) => transitionAction(formData, 'submit_review')
-export const withdrawReviewAction = (formData: FormData) => transitionAction(formData, 'withdraw_review')
-export const approveContentAction = (formData: FormData) => transitionAction(formData, 'approve')
-export const requestChangesAction = (formData: FormData) => transitionAction(formData, 'request_changes')
-export const scheduleContentAction = (formData: FormData) => transitionAction(formData, 'schedule')
+export async function submitReviewAction(formData: FormData) {
+  return transitionAction(formData, 'submit_review')
+}
+
+export async function withdrawReviewAction(formData: FormData) {
+  return transitionAction(formData, 'withdraw_review')
+}
+
+export async function approveContentAction(formData: FormData) {
+  return transitionAction(formData, 'approve')
+}
+
+export async function requestChangesAction(formData: FormData) {
+  return transitionAction(formData, 'request_changes')
+}
+
+export async function scheduleContentAction(formData: FormData) {
+  return transitionAction(formData, 'schedule')
+}
 
 export async function publishContentAction(formData: FormData) {
   const { user } = await requireContentPublisher()
