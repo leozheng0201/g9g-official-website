@@ -12,6 +12,8 @@ const serverSchema = publicSchema.extend({
   GROWTH_AUDIT_FROM_EMAIL: z.string().email(),
   GROWTH_AUDIT_ADMIN_EMAIL: z.string().email(),
   GROWTH_AUDIT_FINGERPRINT_SECRET: z.string().min(32),
+  CMS_PREVIEW_SECRET: z.string().min(32).optional(),
+  CMS_SCHEDULER_SECRET: z.string().min(32).optional(),
 })
 
 export type PublicEnv = z.infer<typeof publicSchema>
