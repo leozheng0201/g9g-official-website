@@ -46,7 +46,10 @@ begin
     select item_id, cr.id, snapshot, now()
     from public.content_revisions cr
     where cr.content_item_id = item_id and cr.revision_number = 1
-      and not exists (select 1 from public.content_publications cp where cp.content_item_id = item_id and cp.unpublished_at is null);
+      and not exists (
+        select 1 from public.content_publications cp
+        where cp.content_item_id = item_id and cp.unpublished_at is null
+      );
   end loop;
 
   for faq in
@@ -59,23 +62,39 @@ begin
       ('audit','品牌成長健檢會怎麼進行？','先提交第一階段申請；初審後再由 G9G 聯繫並說明後續流程。',60)
     ) as v(slug, question, answer, sort_order)
   loop
-    item_id := gen_random_uuid();
-    insert into public.content_items (
-      id, content_type, title, slug, excerpt, blocks, type_fields, seo_title, seo_description,
-      status, sort_order, published_at, version
-    ) values (
-      item_id, 'faq', faq.question, faq.slug, faq.answer,
-      jsonb_build_array(jsonb_build_object('id',gen_random_uuid()::text,'type','paragraph','text',faq.answer,'enabled',true)),
-      jsonb_build_object('question',faq.question,'category','合作與服務','migrationKey','faq-' || faq.slug,'publicPath','/faq#' || faq.slug),
-      faq.question || '｜G9G FAQ', faq.answer, 'published', faq.sort_order, now(), 1
-    ) on conflict (content_type, (coalesce(article_subtype, '')), slug) where deleted_at is null do nothing
-    returning id into item_id;
+    select ci.id into item_id
+    from public.content_items ci
+    where ci.content_type = 'faq'
+      and ci.slug = faq.slug
+      and ci.deleted_at is null
+    limit 1;
 
-    if item_id is not null then
-      select to_jsonb(ci.*) into snapshot from public.content_items ci where ci.id = item_id;
-      insert into public.content_revisions (content_item_id, revision_number, snapshot) values (item_id, 1, snapshot);
-      insert into public.content_publications (content_item_id, revision_id, snapshot, published_at)
-      select item_id, cr.id, snapshot, now() from public.content_revisions cr where cr.content_item_id = item_id and cr.revision_number = 1;
+    if item_id is null then
+      item_id := gen_random_uuid();
+      insert into public.content_items (
+        id, content_type, title, slug, excerpt, blocks, type_fields, seo_title, seo_description,
+        status, sort_order, published_at, version
+      ) values (
+        item_id, 'faq', faq.question, faq.slug, faq.answer,
+        jsonb_build_array(jsonb_build_object('id',gen_random_uuid()::text,'type','paragraph','text',faq.answer,'enabled',true)),
+        jsonb_build_object('question',faq.question,'category','合作與服務','migrationKey','faq-' || faq.slug,'publicPath','/faq#' || faq.slug),
+        faq.question || '｜G9G FAQ', faq.answer, 'published', faq.sort_order, now(), 1
+      );
     end if;
+
+    select to_jsonb(ci.*) into snapshot from public.content_items ci where ci.id = item_id;
+    insert into public.content_revisions (content_item_id, revision_number, snapshot)
+    values (item_id, 1, snapshot)
+    on conflict (content_item_id, revision_number) do nothing;
+
+    insert into public.content_publications (content_item_id, revision_id, snapshot, published_at)
+    select item_id, cr.id, snapshot, now()
+    from public.content_revisions cr
+    where cr.content_item_id = item_id
+      and cr.revision_number = 1
+      and not exists (
+        select 1 from public.content_publications cp
+        where cp.content_item_id = item_id and cp.unpublished_at is null
+      );
   end loop;
 end $$;
