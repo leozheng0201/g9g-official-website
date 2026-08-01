@@ -68,7 +68,7 @@ begin
       jsonb_build_array(jsonb_build_object('id',gen_random_uuid()::text,'type','paragraph','text',faq.answer,'enabled',true)),
       jsonb_build_object('question',faq.question,'category','合作與服務','migrationKey','faq-' || faq.slug,'publicPath','/faq#' || faq.slug),
       faq.question || '｜G9G FAQ', faq.answer, 'published', faq.sort_order, now(), 1
-    ) on conflict (content_type, coalesce(article_subtype, ''), slug) where deleted_at is null do nothing
+    ) on conflict (content_type, (coalesce(article_subtype, '')), slug) where deleted_at is null do nothing
     returning id into item_id;
 
     if item_id is not null then
