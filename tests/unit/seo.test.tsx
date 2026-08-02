@@ -33,8 +33,9 @@ describe('public SEO helpers', () => {
     expect(script?.textContent).toContain('/about')
   })
 
-  it('marks content centers as weekly in the sitemap', () => {
-    const academy = sitemap().find((entry) => entry.url.endsWith('/line-gift-academy'))
+  it('marks content centers as weekly in the sitemap', async () => {
+    const entries = await sitemap()
+    const academy = entries.find((entry) => entry.url.endsWith('/line-gift-academy'))
     expect(academy?.changeFrequency).toBe('weekly')
   })
 
