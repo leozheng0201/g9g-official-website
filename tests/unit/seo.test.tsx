@@ -1,5 +1,10 @@
 import { render } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('@/lib/cms/public-reader', () => ({
+  listPublishedSitemapEntries: async () => [],
+}))
+
 import { metadata as homeMetadata } from '@/app/(public)/page'
 import sitemap from '@/app/sitemap'
 import { Breadcrumbs } from '@/components/public/breadcrumbs'
