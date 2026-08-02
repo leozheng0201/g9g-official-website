@@ -1,6 +1,6 @@
 begin;
 
-select plan(40);
+select plan(45);
 
 select has_table('public', 'content_items', 'content_items exists');
 select has_table('public', 'content_revisions', 'content_revisions exists');
@@ -75,6 +75,32 @@ select is(
   has_table_privilege('authenticated', 'public.content_publications', 'INSERT'),
   false,
   'browser users cannot directly insert publication snapshots'
+);
+
+select is(
+  (select count(*)::integer from public.content_items where slug = 'about-line-gift' and content_type = 'article' and article_subtype = 'line_gift_academy'),
+  1,
+  'official LINE Gift foundation content exists once'
+);
+select is(
+  (select status from public.content_items where slug = 'about-line-gift'),
+  'published',
+  'official LINE Gift foundation content is published'
+);
+select is(
+  (select count(*)::integer from public.content_publications p join public.content_items i on i.id = p.content_item_id where i.slug = 'about-line-gift' and p.unpublished_at is null),
+  1,
+  'official LINE Gift foundation content has one active publication'
+);
+select is(
+  (select type_fields ->> 'source_title' from public.content_items where slug = 'about-line-gift'),
+  '2026 LINE 禮物資訊分享',
+  'official LINE Gift source title is preserved'
+);
+select is(
+  (select jsonb_array_length(type_fields -> 'featured_stats') from public.content_items where slug = 'about-line-gift'),
+  4,
+  'homepage trust signals contain four approved stats'
 );
 
 select * from finish();
