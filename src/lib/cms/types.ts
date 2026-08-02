@@ -57,11 +57,25 @@ export type ContentBlock =
   | FaqGroupBlock
   | DividerBlock
 
+export type OfficialStat = {
+  id: string
+  value: string
+  label: string
+}
+
 export type ArticleFields = {
   subtype: 'insight' | 'line_gift_academy'
   readingMinutes: number
   relatedContentIds?: string[]
   cta?: { label: string; href: string }
+  sourceTitle?: string
+  publicPath?: string
+  featuredStats?: OfficialStat[]
+  stats?: OfficialStat[]
+  scenes?: string[]
+  growthFormula?: string[]
+  platformDirections?: string[]
+  disclaimer?: string
 }
 
 export type CaseStudyFields = {
