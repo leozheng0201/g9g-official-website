@@ -1,3 +1,4 @@
+import { getFeaturedOfficialStats, lineGiftOfficialContent } from '@/content/line-gift-official'
 import type { ContentDraftInput } from '@/lib/cms/types'
 
 export type MigratedContentSeed = {
@@ -8,9 +9,47 @@ export type MigratedContentSeed = {
 }
 
 const paragraph = (id: string, text: string) => ({ id, type: 'paragraph' as const, text, enabled: true })
-const list = (id: string, items: string[]) => ({ id, type: 'list' as const, style: 'bullet' as const, items, enabled: true })
+const heading = (id: string, text: string) => ({ id, type: 'heading' as const, level: 2 as const, text, enabled: true })
+const list = (id: string, items: string[], style: 'bullet' | 'numbered' = 'bullet') => ({ id, type: 'list' as const, style, items, enabled: true })
 
 export const contentCmsSeed: readonly MigratedContentSeed[] = [
+  {
+    migrationKey: 'academy-about-line-gift',
+    publicPath: '/about-line-gift',
+    sortOrder: 5,
+    draft: {
+      contentType: 'article',
+      articleSubtype: 'line_gift_academy',
+      title: '認識 LINE 禮物：品牌進入送禮市場前，應該先看懂什麼？',
+      slug: 'about-line-gift',
+      excerpt: '從官方市場資料、用戶輪廓、送禮場景與平台成長方向，整理品牌評估 LINE 禮物時需要理解的基礎。',
+      blocks: [
+        paragraph('33333333-3333-4333-8333-000000000001', '一般電商主要解決「我需要什麼」；送禮電商還需要回答「我想對誰表達什麼」。'),
+        heading('33333333-3333-4333-8333-000000000002', '官方市場數據'),
+        list('33333333-3333-4333-8333-000000000003', lineGiftOfficialContent.stats.map((item) => `${item.value} ${item.label}`)),
+        heading('33333333-3333-4333-8333-000000000004', '四大社交送禮場景'),
+        list('33333333-3333-4333-8333-000000000005', [...lineGiftOfficialContent.scenes], 'numbered'),
+        heading('33333333-3333-4333-8333-000000000006', lineGiftOfficialContent.growthFormula.join(' × ')),
+        paragraph('33333333-3333-4333-8333-000000000007', '商品建立送禮理由；流量安排被看見的節奏；轉換把送禮價值說清楚。'),
+        heading('33333333-3333-4333-8333-000000000008', '2026 平台方向'),
+        list('33333333-3333-4333-8333-000000000009', [...lineGiftOfficialContent.platformDirections]),
+        paragraph('33333333-3333-4333-8333-000000000010', lineGiftOfficialContent.disclaimer),
+      ],
+      typeFields: {
+        source_title: lineGiftOfficialContent.sourceTitle,
+        public_path: '/about-line-gift',
+        featured_stats: getFeaturedOfficialStats(),
+        stats: lineGiftOfficialContent.stats,
+        scenes: lineGiftOfficialContent.scenes,
+        growth_formula: lineGiftOfficialContent.growthFormula,
+        platform_directions: lineGiftOfficialContent.platformDirections,
+        disclaimer: lineGiftOfficialContent.disclaimer,
+      },
+      seoTitle: '認識 LINE 禮物｜市場、用戶與送禮場景',
+      seoDescription: '整理 LINE 禮物官方市場資料、用戶輪廓、四大送禮場景與品牌經營重點。',
+      canonicalUrl: '/about-line-gift',
+    },
+  },
   {
     migrationKey: 'case-smile-fruit',
     publicPath: '/cases/smile-fruit',
