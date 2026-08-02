@@ -1,6 +1,7 @@
 export const publicRoutes = {
   home: '/',
   about: '/about',
+  aboutLineGift: '/about-line-gift',
   whyG9g: '/why-g9g',
   growthAudit: '/growth-audit',
   growthBlueprint: '/growth-blueprint',
