@@ -217,6 +217,19 @@ grant select, insert on table public.content_workflow_events to authenticated;
 grant select, insert on table public.content_redirects to authenticated;
 grant select, insert, delete on table public.media_usages to authenticated;
 grant select, insert, update on table public.preview_tokens to authenticated;
+
+grant all privileges on table public.content_categories to service_role;
+grant all privileges on table public.content_tags to service_role;
+grant all privileges on table public.media_assets to service_role;
+grant all privileges on table public.content_items to service_role;
+grant all privileges on table public.content_item_tags to service_role;
+grant all privileges on table public.content_revisions to service_role;
+grant all privileges on table public.content_publications to service_role;
+grant all privileges on table public.content_workflow_events to service_role;
+grant all privileges on table public.content_redirects to service_role;
+grant all privileges on table public.media_usages to service_role;
+grant all privileges on table public.preview_tokens to service_role;
+
 grant execute on function public.can_access_cms() to authenticated;
 grant execute on function public.can_publish_content() to authenticated;
 grant execute on function public.can_permanently_delete_content() to authenticated;
