@@ -1,0 +1,83 @@
+import type { ContentDraftInput } from '@/lib/cms/types'
+
+export type MigratedContentSeed = {
+  migrationKey: string
+  publicPath: string
+  sortOrder: number
+  draft: ContentDraftInput
+}
+
+const paragraph = (id: string, text: string) => ({ id, type: 'paragraph' as const, text, enabled: true })
+const list = (id: string, items: string[]) => ({ id, type: 'list' as const, style: 'bullet' as const, items, enabled: true })
+
+export const contentCmsSeed: readonly MigratedContentSeed[] = [
+  {
+    migrationKey: 'case-smile-fruit',
+    publicPath: '/cases/smile-fruit',
+    sortOrder: 10,
+    draft: {
+      contentType: 'case_study',
+      title: '微笑甜果｜LINE 禮物電商案例',
+      slug: 'smile-fruit',
+      excerpt: '以送禮情境與主打品策略，建立節慶檔期的成長動能。',
+      blocks: [
+        paragraph('11111111-1111-4111-8111-111111111101', '以送禮情境與主打品策略，建立節慶檔期的成長動能。'),
+        list('11111111-1111-4111-8111-111111111102', ['過年重點檔期以低廣告預算創造單月近百萬業績', '堅持不降價', '將櫻桃水果禮盒打造為代表性主打商品']),
+      ],
+      typeFields: {
+        brandName: '微笑甜果',
+        serviceScope: ['LINE 禮物電商營運'],
+        resultSummary: '節慶檔期成長與主打品建立。',
+        resultAttribution: '以上為微笑甜果 LINE 禮物電商營運案例成果。',
+      },
+      seoTitle: '微笑甜果 LINE 禮物電商案例',
+      seoDescription: '了解微笑甜果如何以送禮情境與主打品策略建立節慶檔期成長。',
+    },
+  },
+  {
+    migrationKey: 'case-ar-patisserie',
+    publicPath: '/cases/ar-patisserie',
+    sortOrder: 20,
+    draft: {
+      contentType: 'case_study',
+      title: '法布甜｜整體電商與品牌轉型案例',
+      slug: 'ar-patisserie',
+      excerpt: '從傳統伴手禮市場，升級至高客單、高附加價值的送禮市場。',
+      blocks: [
+        paragraph('11111111-1111-4111-8111-111111111201', '從傳統伴手禮市場，升級至高客單、高附加價值的送禮市場。'),
+        list('11111111-1111-4111-8111-111111111202', ['整體電商年營業額突破千萬', '單月 GMV 穩定達百萬', '單月訂單超過 1,400 筆']),
+        paragraph('11111111-1111-4111-8111-111111111203', '以上為整體電商與品牌轉型成果，不代表 LINE 禮物單一平台成果。'),
+      ],
+      typeFields: {
+        brandName: '法布甜',
+        serviceScope: ['整體電商', '品牌轉型'],
+        resultSummary: '品牌定位與整體電商營運升級。',
+        resultAttribution: '以上為整體電商與品牌轉型成果，不代表 LINE 禮物單一平台成果。',
+      },
+      seoTitle: '法布甜整體電商與品牌轉型案例',
+      seoDescription: '了解法布甜如何從傳統伴手禮市場升級至高附加價值送禮市場。',
+    },
+  },
+  ...[
+    ['fit', '什麼品牌適合進入 LINE 禮物？', '會從穩定供貨、基本客服、送禮潛力，以及品牌是否願意建立主打商品一起判斷。'],
+    ['before-entry', '還沒進駐 LINE 禮物，可以先合作嗎？', '可以先做品牌成長健檢與商城啟動規劃，但 G9G 不保證平台審核結果。'],
+    ['guarantee', 'G9G 會保證上架或業績嗎？', '不會。G9G 不保證商城核准、特定業績、流量或搜尋排名。'],
+    ['placements', '廣告與站內版位費包含在服務費嗎？', '廣告預算與 LINE 禮物站內版位費另計；G9G 依合作方案提供策略、規劃與基本版位素材尺寸延伸。'],
+    ['plans', '三種代營運方案有什麼差異？', '商城啟動適合第一次進場；成果分潤依完成訂單成交額計算；全年代營運建立 12 個月的商品、檔期、版位與數據節奏。'],
+    ['audit', '品牌成長健檢會怎麼進行？', '先提交第一階段申請；初審後再由 G9G 聯繫並說明後續流程。'],
+  ].map(([slug, question, answer], index): MigratedContentSeed => ({
+    migrationKey: `faq-${slug}`,
+    publicPath: `/faq#${slug}`,
+    sortOrder: (index + 1) * 10,
+    draft: {
+      contentType: 'faq',
+      title: question,
+      slug,
+      excerpt: answer,
+      blocks: [paragraph(`22222222-2222-4222-8222-${String(index + 1).padStart(12, '0')}`, answer)],
+      typeFields: { question, category: '合作與服務' },
+      seoTitle: `${question}｜G9G FAQ`,
+      seoDescription: answer,
+    },
+  })),
+]

@@ -1,5 +1,10 @@
 import { render } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('@/lib/cms/public-reader', () => ({
+  listPublishedSitemapEntries: async () => [],
+}))
+
 import { metadata as homeMetadata } from '@/app/(public)/page'
 import sitemap from '@/app/sitemap'
 import { Breadcrumbs } from '@/components/public/breadcrumbs'
@@ -33,8 +38,9 @@ describe('public SEO helpers', () => {
     expect(script?.textContent).toContain('/about')
   })
 
-  it('marks content centers as weekly in the sitemap', () => {
-    const academy = sitemap().find((entry) => entry.url.endsWith('/line-gift-academy'))
+  it('marks content centers as weekly in the sitemap', async () => {
+    const entries = await sitemap()
+    const academy = entries.find((entry) => entry.url.endsWith('/line-gift-academy'))
     expect(academy?.changeFrequency).toBe('weekly')
   })
 
