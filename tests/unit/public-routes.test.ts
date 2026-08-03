@@ -6,6 +6,7 @@ describe('public route registry', () => {
     expect(indexablePublicRoutes).toEqual([
       '/',
       '/about',
+      '/about-line-gift',
       '/why-g9g',
       '/growth-audit',
       '/growth-blueprint',

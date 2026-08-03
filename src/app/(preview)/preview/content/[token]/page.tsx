@@ -7,7 +7,7 @@ import { parseContentBlocks } from '@/lib/cms/schemas'
 import { verifyPreviewToken } from '@/lib/cms/preview-tokens'
 
 export const metadata: Metadata = {
-  title: '草稿預覽｜G9G',
+  title: '未公開預覽｜G9G',
   robots: { index: false, follow: false, nocache: true },
 }
 
@@ -21,9 +21,12 @@ export default async function ContentPreviewPage({ params }: { params: Promise<{
 
   return (
     <main>
-      <div className="sticky top-0 z-50 bg-amber-300 px-4 py-3 text-center text-sm font-black text-black">草稿預覽｜此頁不會被搜尋引擎收錄，連結將於 {verified.expiresAt.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })} 到期</div>
+      <div className="sticky top-0 z-50 bg-amber-300 px-4 py-3 text-center text-sm font-black text-black">
+        未公開預覽｜此頁不會被搜尋引擎收錄，連結將於{' '}
+        {verified.expiresAt.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })} 到期
+      </div>
       <article className="mx-auto max-w-4xl px-5 py-14 sm:px-8">
-        <p className="text-xs font-black tracking-[0.16em] text-brand">DRAFT PREVIEW</p>
+        <p className="text-xs font-black tracking-[0.16em] text-brand">PRIVATE PREVIEW</p>
         <h1 className="mt-4 text-4xl font-black sm:text-5xl">{item.title}</h1>
         {item.excerpt ? <p className="mt-5 text-xl leading-8 text-muted">{item.excerpt}</p> : null}
         <div className="mt-12"><ContentRenderer blocks={blocks} /></div>

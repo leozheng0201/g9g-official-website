@@ -5,6 +5,7 @@ import { CtaBand } from '@/components/public/cta-band'
 import { FounderPanel } from '@/components/public/founder-panel'
 import { HeroStrategyBoard } from '@/components/public/hero-strategy-board'
 import { JsonLd } from '@/components/public/json-ld'
+import { OfficialTrustSection } from '@/components/public/line-gift/official-trust-section'
 import { PageHero } from '@/components/public/page-hero'
 import { SectionHeading } from '@/components/public/section-heading'
 import { featuredCases } from '@/content/cases'
@@ -51,6 +52,8 @@ export default function HomePage() {
           </div>
         </Container>
       </section>
+
+      <OfficialTrustSection />
 
       <section className={`${sectionClass} bg-surface`} id="growth-method">
         <Container>
