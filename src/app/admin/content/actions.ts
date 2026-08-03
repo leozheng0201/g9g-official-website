@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { requireCmsUser, requireContentPublisher, requireSuperAdmin } from '@/lib/cms/auth'
-import { createPreviewToken } from '@/lib/cms/preview-tokens'
+import { createPreviewToken, revokePreviewTokensForContentItem } from '@/lib/cms/preview-tokens'
 import {
   createContentDraft,
   getContentItem,
@@ -139,4 +139,11 @@ export async function createPreviewAction(formData: FormData) {
   const { user } = await requireCmsUser()
   const { token } = await createPreviewToken({ contentItemId: string(formData, 'id'), actorId: user.id, expiresInMinutes: 60 })
   redirect(`/preview/content/${token}`)
+}
+
+export async function revokePreviewAction(formData: FormData) {
+  await requireCmsUser()
+  const id = string(formData, 'id')
+  await revokePreviewTokensForContentItem(id)
+  revalidatePath(`/admin/content`)
 }

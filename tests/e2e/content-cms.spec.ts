@@ -43,6 +43,20 @@ test.describe('official LINE Gift foundation content', () => {
     await expect(page.getByText('情緒禮物', { exact: true }).first()).toBeVisible()
     await expect(page.getByText(/G9G／盛澄策略顧問非 LINE 官方或官方代理商/)).toBeVisible()
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/about-line-gift$/)
+    const schemas = await page.locator('script[type="application/ld+json"]').evaluateAll((scripts) =>
+      scripts.map((script) => JSON.parse(script.textContent ?? '{}')),
+    )
+    expect(schemas).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ '@type': 'WebPage', url: expect.stringMatching(/\/about-line-gift$/) }),
+        expect.objectContaining({
+          '@type': 'BreadcrumbList',
+          itemListElement: expect.arrayContaining([
+            expect.objectContaining({ item: expect.stringMatching(/\/about-line-gift$/) }),
+          ]),
+        }),
+      ]),
+    )
     await expect(page.getByText('免費品牌健檢')).toHaveCount(0)
     await expect(page.getByText('scrutator')).toHaveCount(0)
   })
@@ -55,6 +69,15 @@ test.describe('official LINE Gift foundation content', () => {
     await page.goto('/line-gift-academy')
     const academyLink = page.getByRole('link', { name: /先認識 LINE 禮物/ })
     await expect(academyLink).toHaveAttribute('href', '/about-line-gift')
+    await expect(page.locator('a[href="/line-gift-academy/about-line-gift"]')).toHaveCount(0)
+  })
+
+  test('lists the foundation page once through its active publication snapshot', async ({ request }) => {
+    const response = await request.get('/sitemap.xml')
+    expect(response.ok()).toBe(true)
+    const sitemap = await response.text()
+    expect(sitemap.match(/\/about-line-gift/g)).toHaveLength(1)
+    expect(sitemap).not.toContain('/line-gift-academy/about-line-gift')
   })
 
   test('has no horizontal overflow at 390px', async ({ page }) => {

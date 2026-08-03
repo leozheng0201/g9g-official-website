@@ -1,6 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 
-import { contentCmsSeed } from '../src/content/migrations/content-cms-seed'
+import {
+  buildMigratedContentPayload,
+  contentCmsSeed,
+} from '../src/content/migrations/content-cms-seed'
 import { parseServerEnv } from '../src/lib/env/schema'
 
 async function main() {
@@ -10,7 +13,6 @@ async function main() {
   })
 
   for (const seed of contentCmsSeed) {
-    const articleSubtype = seed.draft.contentType === 'article' ? seed.draft.typeFields.subtype : null
     const { data: existing, error: findError } = await client
       .from('content_items')
       .select('id,version')
@@ -19,20 +21,7 @@ async function main() {
       .maybeSingle()
     if (findError) throw findError
 
-    const payload = {
-      content_type: seed.draft.contentType,
-      article_subtype: articleSubtype,
-      title: seed.draft.title,
-      slug: seed.draft.slug,
-      excerpt: seed.draft.excerpt,
-      blocks: seed.draft.blocks,
-      type_fields: { ...seed.draft.typeFields, migrationKey: seed.migrationKey, publicPath: seed.publicPath },
-      seo_title: seed.draft.seoTitle,
-      seo_description: seed.draft.seoDescription,
-      sort_order: seed.sortOrder,
-      status: 'approved',
-      updated_at: new Date().toISOString(),
-    }
+    const payload = buildMigratedContentPayload(seed, new Date().toISOString())
 
     if (existing) {
       const { error } = await client.from('content_items').update({ ...payload, version: existing.version + 1 }).eq('id', existing.id)

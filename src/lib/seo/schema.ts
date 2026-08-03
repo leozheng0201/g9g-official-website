@@ -38,6 +38,26 @@ export function buildWebSiteSchema(siteUrl: string) {
   } as const
 }
 
+export function buildWebPageSchema(
+  siteUrl: string,
+  page: { name: string; description: string; path: string; datePublished?: string },
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: page.name,
+    description: page.description,
+    url: new URL(page.path, siteUrl).toString(),
+    inLanguage: 'zh-TW',
+    ...(page.datePublished ? { datePublished: page.datePublished } : {}),
+    isPartOf: {
+      '@type': 'WebSite',
+      name: `${siteConfig.name}｜${siteConfig.positioning}`,
+      url: siteUrl,
+    },
+  } as const
+}
+
 export function buildBreadcrumbSchema(
   siteUrl: string,
   items: readonly { name: string; path: string }[],

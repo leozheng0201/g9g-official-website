@@ -78,3 +78,13 @@ export async function revokePreviewToken(token: string) {
     .eq('token_hash', tokenHash(token))
   if (error) throw error
 }
+
+export async function revokePreviewTokensForContentItem(contentItemId: string) {
+  const client = createServiceRoleSupabaseClient()
+  const { error } = await client
+    .from('preview_tokens')
+    .update({ revoked_at: new Date().toISOString() })
+    .eq('content_item_id', contentItemId)
+    .is('revoked_at', null)
+  if (error) throw error
+}

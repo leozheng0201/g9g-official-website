@@ -18,4 +18,6 @@ export const publicRoutes = {
 
 export type PublicRoute = (typeof publicRoutes)[keyof typeof publicRoutes]
 
-export const indexablePublicRoutes: readonly PublicRoute[] = Object.values(publicRoutes)
+export const indexablePublicRoutes: readonly PublicRoute[] = Object.values(publicRoutes).filter(
+  (route) => route !== publicRoutes.aboutLineGift,
+)

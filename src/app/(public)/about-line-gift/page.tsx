@@ -4,41 +4,23 @@ import { notFound } from 'next/navigation'
 import { Breadcrumbs } from '@/components/public/breadcrumbs'
 import { Container } from '@/components/public/container'
 import { CtaBand } from '@/components/public/cta-band'
+import { JsonLd } from '@/components/public/json-ld'
 import { OfficialStats } from '@/components/public/line-gift/official-stats'
 import { SceneCard } from '@/components/public/line-gift/scene-card'
 import { SourceLabel } from '@/components/public/line-gift/source-label'
 import { PageHero } from '@/components/public/page-hero'
 import { SectionHeading } from '@/components/public/section-heading'
-import type { OfficialStat } from '@/lib/cms/types'
+import { parseLineGiftOfficialFields } from '@/content/line-gift-official'
 import { getPublishedContentBySlug } from '@/lib/cms/public-reader'
 import { publicRoutes } from '@/lib/routes/public'
 import { createPageMetadata } from '@/lib/seo/metadata'
+import { buildWebPageSchema } from '@/lib/seo/schema'
 
 export const metadata = createPageMetadata({
   title: '認識 LINE 禮物｜市場、用戶與送禮場景',
   description: '整理 LINE 禮物官方市場資料、用戶輪廓、四大送禮場景與品牌經營重點。',
   path: publicRoutes.aboutLineGift,
 })
-
-const sceneInterpretations = [
-  '對應生日、週年、節慶等明確時刻，商品需要能快速說明送禮理由與儀式感。',
-  '企業往來、客戶致意與團隊關係更重視穩定供貨、品牌識別與收禮體驗。',
-  '開工、升遷、喬遷與祝賀等時刻，文案、寓意與包裝必須讓祝福一眼可懂。',
-  '道謝、打氣、道歉與陪伴不是固定檔期，商品需要承接情緒與關係表達。',
-]
-
-function readStats(value: unknown): OfficialStat[] {
-  if (!Array.isArray(value)) return []
-  return value.filter((item): item is OfficialStat => {
-    if (!item || typeof item !== 'object') return false
-    const candidate = item as Record<string, unknown>
-    return typeof candidate.id === 'string' && typeof candidate.value === 'string' && typeof candidate.label === 'string'
-  })
-}
-
-function readStrings(value: unknown): string[] {
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
-}
 
 export default async function AboutLineGiftPage() {
   const content = await getPublishedContentBySlug({
@@ -48,15 +30,31 @@ export default async function AboutLineGiftPage() {
   })
 
   if (!content) notFound()
+  const officialFields = parseLineGiftOfficialFields(content.typeFields)
+  if (!officialFields) notFound()
 
-  const stats = readStats(content.typeFields.stats)
-  const scenes = readStrings(content.typeFields.scenes)
-  const growthFormula = readStrings(content.typeFields.growth_formula)
-  const directions = readStrings(content.typeFields.platform_directions)
-  const disclaimer = typeof content.typeFields.disclaimer === 'string' ? content.typeFields.disclaimer : ''
+  const {
+    stats,
+    scenes,
+    sceneInterpretations,
+    growthFormula,
+    growthInterpretations,
+    platformDirections: directions,
+    platformDirectionInterpretations: directionInterpretations,
+    disclaimer,
+  } = officialFields
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 
   return (
     <>
+      <JsonLd
+        data={buildWebPageSchema(siteUrl, {
+          name: content.title,
+          description: content.excerpt ?? '',
+          path: publicRoutes.aboutLineGift,
+          datePublished: content.publishedAt,
+        })}
+      />
       <PageHero
         eyebrow="LINE 禮物官方資料 × 老莊營運解讀"
         title={content.title}
@@ -66,7 +64,7 @@ export default async function AboutLineGiftPage() {
       />
 
       <Container className="py-16 sm:py-20">
-        <Breadcrumbs items={[{ label: '認識 LINE 禮物' }]} />
+        <Breadcrumbs currentPath={publicRoutes.aboutLineGift} items={[{ label: '認識 LINE 禮物' }]} />
 
         <section className="mt-10 rounded-[2rem] border border-line bg-soft p-7 sm:p-10">
           <SourceLabel kind="interpretation" />
@@ -91,15 +89,11 @@ export default async function AboutLineGiftPage() {
           <SourceLabel kind="official" />
           <h2 className="mt-4 text-3xl font-black">{growthFormula.join(' × ')}</h2>
           <div className="mt-6 grid gap-5 md:grid-cols-3">
-            {[
-              ['商品', '送禮理由、對象、價格帶、組合、包裝與賀卡。'],
-              ['流量', '平台活動、年度檔期、主題策展、品牌週與站內版位。'],
-              ['轉換', '首圖、標題、商品頁、優惠、加價購與收禮選擇。'],
-            ].map(([title, text]) => (
-              <article key={title} className="rounded-card bg-soft p-5">
+            {growthInterpretations.map((item) => (
+              <article key={item.title} className="rounded-card bg-soft p-5">
                 <SourceLabel kind="interpretation" />
-                <h3 className="mt-4 text-xl font-black">{title}</h3>
-                <p className="mt-2 text-muted">{text}</p>
+                <h3 className="mt-4 text-xl font-black">{item.title}</h3>
+                <p className="mt-2 text-muted">{item.text}</p>
               </article>
             ))}
           </div>
@@ -108,10 +102,14 @@ export default async function AboutLineGiftPage() {
         <section className="mt-16">
           <SectionHeading eyebrow="2026 平台方向" title="更好逛、更心動、更好送。" />
           <div className="mt-8 grid gap-5 md:grid-cols-3">
-            {directions.map((direction) => (
+            {directions.map((direction, index) => (
               <article key={direction} className="rounded-card border border-line bg-paper p-6">
                 <SourceLabel kind="official" />
                 <h3 className="mt-4 text-2xl font-black">{direction}</h3>
+                <div className="mt-5 border-t border-line pt-5">
+                  <SourceLabel kind="interpretation" />
+                  <p className="mt-3 text-muted">{directionInterpretations[index]}</p>
+                </div>
               </article>
             ))}
           </div>

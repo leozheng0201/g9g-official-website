@@ -3,6 +3,7 @@ import {
   createPreviewAction,
   publishContentAction,
   requestChangesAction,
+  revokePreviewAction,
   scheduleContentAction,
   submitReviewAction,
   trashContentAction,
@@ -23,6 +24,7 @@ export function WorkflowPanel({ id, status, role }: { id: string; status: string
         {status === 'approved' && publisher ? <><form action={publishContentAction}><input type="hidden" name="id" value={id} /><button className="w-full rounded bg-brand px-4 py-2 font-bold text-white">立即發布</button></form><form action={scheduleContentAction} className="space-y-2"><input type="hidden" name="id" value={id} /><input name="scheduledPublishAt" type="datetime-local" required className="w-full rounded border border-line p-2" /><input name="scheduledUnpublishAt" type="datetime-local" className="w-full rounded border border-line p-2" /><button className="w-full rounded border px-4 py-2 font-bold">設定排程</button></form></> : null}
         {status === 'published' && publisher ? <form action={unpublishContentAction}><input type="hidden" name="id" value={id} /><button className="w-full rounded border px-4 py-2 font-bold">下架</button></form> : null}
         <form action={createPreviewAction}><input type="hidden" name="id" value={id} /><button className="w-full rounded border px-4 py-2 font-bold">建立 60 分鐘預覽</button></form>
+        <form action={revokePreviewAction}><input type="hidden" name="id" value={id} /><button className="w-full rounded border px-4 py-2 font-bold">撤銷有效預覽</button></form>
         {role !== 'marketing' && status !== 'trashed' ? <form action={trashContentAction}><input type="hidden" name="id" value={id} /><button className="w-full rounded border border-red-300 px-4 py-2 font-bold text-red-700">移到垃圾桶</button></form> : null}
       </div>
     </aside>
