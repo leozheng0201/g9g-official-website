@@ -1,5 +1,9 @@
 import { z } from 'zod'
 
+import {
+  lineGiftOfficialContentId,
+  parseLineGiftOfficialFields,
+} from '@/content/line-gift-official'
 import type { ContentBlock, ContentDraftInput } from '@/lib/cms/types'
 
 const uuid = z.string().uuid()
@@ -15,6 +19,13 @@ const safeLink = z.string().trim().refine((value) => {
 }, '連結必須是站內路徑或 HTTPS 網址')
 
 const httpsUrl = z.url().refine((value) => new URL(value).protocol === 'https:', '網址必須使用 HTTPS')
+const publicPath = z.string().trim().regex(/^\/(?!\/)[a-z0-9/-]*$/, '公開路徑必須是站內絕對路徑')
+const officialStat = z
+  .object({ id: nonEmptyText(80), value: nonEmptyText(120), label: nonEmptyText(200) })
+  .strict()
+const officialInterpretation = z
+  .object({ title: nonEmptyText(120), text: nonEmptyText(1000) })
+  .strict()
 
 const baseBlock = {
   id: uuid,
@@ -136,6 +147,17 @@ const articleDraft = z
         readingMinutes: z.number().int().min(1).max(240),
         relatedContentIds: z.array(uuid).max(12).optional(),
         cta: z.object({ label: nonEmptyText(120), href: safeLink }).strict().optional(),
+        sourceTitle: nonEmptyText(200).optional(),
+        publicPath: publicPath.optional(),
+        featuredStats: z.array(officialStat).length(4).optional(),
+        stats: z.array(officialStat).max(12).optional(),
+        scenes: z.array(nonEmptyText(120)).max(12).optional(),
+        sceneInterpretations: z.array(nonEmptyText(1000)).max(12).optional(),
+        growthFormula: z.array(nonEmptyText(120)).max(12).optional(),
+        growthInterpretations: z.array(officialInterpretation).max(12).optional(),
+        platformDirections: z.array(nonEmptyText(120)).max(12).optional(),
+        platformDirectionInterpretations: z.array(nonEmptyText(1000)).max(12).optional(),
+        disclaimer: nonEmptyText(1000).optional(),
       })
       .strict(),
   })
@@ -181,12 +203,48 @@ const resourceDraft = z
   })
   .strict()
 
-const contentDraftSchema = z.discriminatedUnion('contentType', [articleDraft, caseStudyDraft, faqDraft, resourceDraft])
+const contentDraftSchema = z
+  .discriminatedUnion('contentType', [articleDraft, caseStudyDraft, faqDraft, resourceDraft])
+  .superRefine((draft, context) => {
+    if (
+      draft.contentType !== 'article' ||
+      (draft.slug !== 'about-line-gift' && draft.typeFields.publicPath !== '/about-line-gift')
+    ) {
+      return
+    }
+
+    if (
+      draft.slug !== 'about-line-gift' ||
+      draft.typeFields.subtype !== 'line_gift_academy' ||
+      !parseLineGiftOfficialFields(draft.typeFields)
+    ) {
+      context.addIssue({
+        code: 'custom',
+        path: ['typeFields'],
+        message: '認識 LINE 禮物頁必須符合固定官方資料契約與非官方聲明',
+      })
+    }
+  })
 
 export function parseContentBlocks(input: unknown): ContentBlock[] {
   return blocksSchema.parse(input) as ContentBlock[]
 }
 
-export function parseContentDraft(input: unknown): ContentDraftInput {
-  return contentDraftSchema.parse(input) as ContentDraftInput
+export function parseContentDraft(
+  input: unknown,
+  context?: { contentItemId?: string },
+): ContentDraftInput {
+  const draft = contentDraftSchema.parse(input)
+  if (
+    context?.contentItemId === lineGiftOfficialContentId &&
+    (
+      draft.contentType !== 'article' ||
+      draft.slug !== 'about-line-gift' ||
+      draft.typeFields.subtype !== 'line_gift_academy' ||
+      !parseLineGiftOfficialFields(draft.typeFields)
+    )
+  ) {
+    throw new Error('認識 LINE 禮物頁必須符合固定官方資料契約與非官方聲明')
+  }
+  return draft as ContentDraftInput
 }

@@ -80,7 +80,7 @@ export async function createContentDraft(input: ContentDraftInput, actorId: stri
 }
 
 export async function updateContentDraft(id: string, input: ContentDraftInput, expectedVersion: number, actorId: string) {
-  const draft = parseContentDraft(input)
+  const draft = parseContentDraft(input, { contentItemId: id })
   const client = createServiceRoleSupabaseClient()
   const articleSubtype = draft.contentType === 'article' ? draft.typeFields.subtype : null
   const { data, error } = await client

@@ -1,6 +1,6 @@
 begin;
 
-select plan(45);
+select plan(52);
 
 select has_table('public', 'content_items', 'content_items exists');
 select has_table('public', 'content_revisions', 'content_revisions exists');
@@ -93,14 +93,49 @@ select is(
   'official LINE Gift foundation content has one active publication'
 );
 select is(
-  (select type_fields ->> 'source_title' from public.content_items where slug = 'about-line-gift'),
+  (select type_fields ->> 'sourceTitle' from public.content_items where slug = 'about-line-gift'),
   '2026 LINE 禮物資訊分享',
   'official LINE Gift source title is preserved'
 );
 select is(
-  (select jsonb_array_length(type_fields -> 'featured_stats') from public.content_items where slug = 'about-line-gift'),
+  (select jsonb_array_length(type_fields -> 'featuredStats') from public.content_items where slug = 'about-line-gift'),
   4,
   'homepage trust signals contain four approved stats'
+);
+select is(
+  (select type_fields ->> 'publicPath' from public.content_items where slug = 'about-line-gift'),
+  '/about-line-gift',
+  'official LINE Gift custom public path is preserved'
+);
+select is(
+  (select p.snapshot #>> '{type_fields,sourceTitle}' from public.content_publications p join public.content_items i on i.id = p.content_item_id where i.slug = 'about-line-gift' and p.unpublished_at is null),
+  '2026 LINE 禮物資訊分享',
+  'publication snapshot preserves the official source title'
+);
+select is(
+  (select jsonb_array_length(p.snapshot #> '{type_fields,featuredStats}') from public.content_publications p join public.content_items i on i.id = p.content_item_id where i.slug = 'about-line-gift' and p.unpublished_at is null),
+  4,
+  'publication snapshot preserves four homepage trust signals'
+);
+select is(
+  (select count(*)::integer from public.content_revisions r join public.content_items i on i.id = r.content_item_id where i.slug = 'about-line-gift'),
+  2,
+  'official field normalization creates a new immutable revision'
+);
+select is(
+  (select snapshot #>> '{type_fields,source_title}' from public.content_revisions where content_item_id = '30000000-0000-4000-8000-000000000201' and revision_number = 1),
+  '2026 LINE 禮物資訊分享',
+  'original revision remains unchanged for audit history'
+);
+select is(
+  (select p.snapshot #>> '{type_fields,source_title}' from public.content_publications p join public.content_revisions r on r.id = p.revision_id where p.content_item_id = '30000000-0000-4000-8000-000000000201' and r.revision_number = 1 and p.unpublished_at is not null),
+  '2026 LINE 禮物資訊分享',
+  'original publication remains unchanged and is retired'
+);
+select is(
+  (select count(*)::integer from public.content_workflow_events where content_item_id = '30000000-0000-4000-8000-000000000201' and event_type = 'official_fields_normalized'),
+  1,
+  'official field normalization leaves an audit event'
 );
 
 select * from finish();

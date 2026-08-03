@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   getFeaturedOfficialStats,
   lineGiftOfficialContent,
+  parseLineGiftOfficialFields,
 } from '@/content/line-gift-official'
 
 describe('LINE Gift official content contract', () => {
@@ -54,5 +55,22 @@ describe('LINE Gift official content contract', () => {
     const serialized = JSON.stringify(lineGiftOfficialContent)
     expect(serialized).not.toContain('scrutator')
     expect(serialized).not.toContain('免費品牌健檢')
+  })
+
+  it('fails closed when a publication changes official data or removes the disclaimer', () => {
+    expect(
+      parseLineGiftOfficialFields({
+        sourceTitle: lineGiftOfficialContent.sourceTitle,
+        publicPath: '/about-line-gift',
+        featuredStats: getFeaturedOfficialStats(),
+        stats: [{ id: 'users', value: '1,000 萬以上', label: 'LINE 禮物用戶' }],
+        scenes: lineGiftOfficialContent.scenes,
+        sceneInterpretations: lineGiftOfficialContent.sceneInterpretations,
+        growthFormula: lineGiftOfficialContent.growthFormula,
+        growthInterpretations: lineGiftOfficialContent.growthInterpretations,
+        platformDirections: lineGiftOfficialContent.platformDirections,
+        platformDirectionInterpretations: lineGiftOfficialContent.platformDirectionInterpretations,
+      }),
+    ).toBeNull()
   })
 })

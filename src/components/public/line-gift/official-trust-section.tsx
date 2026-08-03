@@ -2,12 +2,16 @@ import Link from 'next/link'
 
 import { Container } from '@/components/public/container'
 import { SectionHeading } from '@/components/public/section-heading'
-import { getFeaturedOfficialStats, lineGiftOfficialContent } from '@/content/line-gift-official'
+import type { OfficialStat } from '@/lib/cms/types'
 import { publicRoutes } from '@/lib/routes/public'
 
-export function OfficialTrustSection() {
-  const stats = getFeaturedOfficialStats()
-
+export function OfficialTrustSection({
+  sourceTitle,
+  stats,
+}: {
+  sourceTitle: string
+  stats: readonly OfficialStat[]
+}) {
   return (
     <section className="bg-soft py-16 sm:py-20" id="line-gift-market">
       <Container>
@@ -25,7 +29,7 @@ export function OfficialTrustSection() {
           ))}
         </div>
         <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-muted">資料來源：{lineGiftOfficialContent.sourceTitle}</p>
+          <p className="text-sm text-muted">資料來源：{sourceTitle}</p>
           <Link
             href={publicRoutes.aboutLineGift}
             className="font-bold underline decoration-brand decoration-4 underline-offset-4"

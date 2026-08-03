@@ -63,6 +63,11 @@ export type OfficialStat = {
   label: string
 }
 
+export type OfficialInterpretation = {
+  title: string
+  text: string
+}
+
 export type ArticleFields = {
   subtype: 'insight' | 'line_gift_academy'
   readingMinutes: number
@@ -73,8 +78,11 @@ export type ArticleFields = {
   featuredStats?: OfficialStat[]
   stats?: OfficialStat[]
   scenes?: string[]
+  sceneInterpretations?: string[]
   growthFormula?: string[]
+  growthInterpretations?: OfficialInterpretation[]
   platformDirections?: string[]
+  platformDirectionInterpretations?: string[]
   disclaimer?: string
 }
 

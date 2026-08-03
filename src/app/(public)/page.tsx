@@ -10,7 +10,9 @@ import { PageHero } from '@/components/public/page-hero'
 import { SectionHeading } from '@/components/public/section-heading'
 import { featuredCases } from '@/content/cases'
 import { contentEntries, giftScenes, growthPillars, growthServices, painPoints, processSteps } from '@/content/home'
+import { parseLineGiftOfficialFields } from '@/content/line-gift-official'
 import { siteConfig } from '@/content/site'
+import { getPublishedContentBySlug } from '@/lib/cms/public-reader'
 import { publicRoutes } from '@/lib/routes/public'
 import { createPageMetadata } from '@/lib/seo/metadata'
 import { buildOrganizationSchema, buildWebSiteSchema } from '@/lib/seo/schema'
@@ -28,8 +30,20 @@ export const metadata = {
 
 const sectionClass = 'py-16 sm:py-20'
 
-export default function HomePage() {
+export default async function HomePage() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+  const officialContent = await getPublishedContentBySlug({
+    contentType: 'article',
+    articleSubtype: 'line_gift_academy',
+    slug: 'about-line-gift',
+  })
+  const officialFields = officialContent
+    ? parseLineGiftOfficialFields(officialContent.typeFields)
+    : null
+  const officialTrust = officialFields
+    ? { sourceTitle: officialFields.sourceTitle, stats: officialFields.featuredStats }
+    : null
+
   return (
     <>
       <JsonLd data={buildOrganizationSchema(siteUrl)} />
@@ -53,7 +67,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      <OfficialTrustSection />
+      {officialTrust ? <OfficialTrustSection {...officialTrust} /> : null}
 
       <section className={`${sectionClass} bg-surface`} id="growth-method">
         <Container>

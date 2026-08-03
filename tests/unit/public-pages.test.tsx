@@ -1,6 +1,12 @@
 import type { ReactElement } from 'react'
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { getFeaturedOfficialStats, lineGiftOfficialContent } from '@/content/line-gift-official'
+
+const cmsState = vi.hoisted(() => ({
+  articles: [] as Array<Record<string, unknown>>,
+}))
 
 vi.mock('@/app/(public)/growth-audit/actions', () => ({
   submitGrowthAudit: async () => ({ status: 'idle' }),
@@ -26,7 +32,9 @@ vi.mock('@/lib/cms/public-reader', () => ({
             snapshot: { status: 'published' },
           },
         ]
-      : [],
+      : contentType === 'article'
+        ? cmsState.articles
+        : [],
   getPublishedContentBySlug: async () => null,
   listPublishedSitemapEntries: async () => [],
 }))
@@ -47,6 +55,34 @@ import WhyG9GPage from '@/app/(public)/why-g9g/page'
 import NotFound from '@/app/not-found'
 
 type PublicPage = () => ReactElement | Promise<ReactElement>
+
+const foundationPublication = {
+  id: '30000000-0000-4000-8000-000000000201',
+  contentType: 'article',
+  articleSubtype: 'line_gift_academy',
+  title: '認識 LINE 禮物：品牌進入送禮市場前，應該先看懂什麼？',
+  slug: 'about-line-gift',
+  excerpt: '官方資料與營運解讀。',
+  blocks: [],
+  typeFields: {
+    sourceTitle: lineGiftOfficialContent.sourceTitle,
+    publicPath: '/about-line-gift',
+    featuredStats: getFeaturedOfficialStats(),
+    stats: lineGiftOfficialContent.stats,
+    scenes: lineGiftOfficialContent.scenes,
+    sceneInterpretations: lineGiftOfficialContent.sceneInterpretations,
+    growthFormula: lineGiftOfficialContent.growthFormula,
+    growthInterpretations: lineGiftOfficialContent.growthInterpretations,
+    platformDirections: lineGiftOfficialContent.platformDirections,
+    platformDirectionInterpretations: lineGiftOfficialContent.platformDirectionInterpretations,
+    disclaimer: lineGiftOfficialContent.disclaimer,
+  },
+  seoTitle: '認識 LINE 禮物',
+  seoDescription: '官方資料與營運解讀。',
+  canonicalUrl: '/about-line-gift',
+  publishedAt: '2026-08-03T00:00:00.000Z',
+  snapshot: { status: 'published' },
+}
 
 const pages: readonly [PublicPage, string][] = [
   [AboutPage, '關於 G9G'],
@@ -69,6 +105,10 @@ async function renderPage(Page: PublicPage) {
 }
 
 describe('public pages', () => {
+  beforeEach(() => {
+    cmsState.articles = [foundationPublication]
+  })
+
   it.each(pages)('renders one approved H1 for %s', async (Page, heading) => {
     const { container } = await renderPage(Page)
     expect(screen.getByRole('heading', { level: 1, name: heading })).toBeInTheDocument()
@@ -104,6 +144,31 @@ describe('public pages', () => {
       'href',
       '/cases/smile-fruit',
     )
+  })
+
+  it('does not render the foundation publication as a broken academy article card', async () => {
+    const { container } = await renderPage(AcademyPage)
+    expect(screen.getByRole('link', { name: /先認識 LINE 禮物/ })).toHaveAttribute(
+      'href',
+      '/about-line-gift',
+    )
+    expect(container.querySelector('a[href="/line-gift-academy/about-line-gift"]')).toBeNull()
+  })
+
+  it('hides the foundation entry after its publication is withdrawn', async () => {
+    cmsState.articles = []
+    await renderPage(AcademyPage)
+    expect(screen.queryByRole('link', { name: /先認識 LINE 禮物/ })).not.toBeInTheDocument()
+  })
+
+  it('hides a malformed foundation snapshot instead of linking to a 404', async () => {
+    cmsState.articles = [{
+      ...foundationPublication,
+      typeFields: { publicPath: '/about-line-gift' },
+    }]
+    const { container } = await renderPage(AcademyPage)
+    expect(screen.queryByRole('link', { name: /先認識 LINE 禮物/ })).not.toBeInTheDocument()
+    expect(container.querySelector('a[href="/line-gift-academy/about-line-gift"]')).toBeNull()
   })
 
   it('renders a useful not-found state', () => {

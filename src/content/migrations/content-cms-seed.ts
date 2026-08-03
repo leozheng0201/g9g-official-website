@@ -8,6 +8,24 @@ export type MigratedContentSeed = {
   draft: ContentDraftInput
 }
 
+export function buildMigratedContentPayload(seed: MigratedContentSeed, updatedAt: string) {
+  const articleSubtype = seed.draft.contentType === 'article' ? seed.draft.typeFields.subtype : null
+  return {
+    content_type: seed.draft.contentType,
+    article_subtype: articleSubtype,
+    title: seed.draft.title,
+    slug: seed.draft.slug,
+    excerpt: seed.draft.excerpt,
+    blocks: seed.draft.blocks,
+    type_fields: seed.draft.typeFields,
+    seo_title: seed.draft.seoTitle,
+    seo_description: seed.draft.seoDescription,
+    sort_order: seed.sortOrder,
+    status: 'approved',
+    updated_at: updatedAt,
+  }
+}
+
 const paragraph = (id: string, text: string) => ({ id, type: 'paragraph' as const, text, enabled: true })
 const heading = (id: string, text: string) => ({ id, type: 'heading' as const, level: 2 as const, text, enabled: true })
 const list = (id: string, items: string[], style: 'bullet' | 'numbered' = 'bullet') => ({ id, type: 'list' as const, style, items, enabled: true })
@@ -42,8 +60,11 @@ export const contentCmsSeed: readonly MigratedContentSeed[] = [
         featuredStats: getFeaturedOfficialStats(),
         stats: [...lineGiftOfficialContent.stats],
         scenes: [...lineGiftOfficialContent.scenes],
+        sceneInterpretations: [...lineGiftOfficialContent.sceneInterpretations],
         growthFormula: [...lineGiftOfficialContent.growthFormula],
+        growthInterpretations: [...lineGiftOfficialContent.growthInterpretations],
         platformDirections: [...lineGiftOfficialContent.platformDirections],
+        platformDirectionInterpretations: [...lineGiftOfficialContent.platformDirectionInterpretations],
         disclaimer: lineGiftOfficialContent.disclaimer,
       },
       seoTitle: '認識 LINE 禮物｜市場、用戶與送禮場景',
