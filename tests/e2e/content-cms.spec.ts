@@ -29,3 +29,41 @@ test.describe('published CMS content', () => {
     expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth)
   })
 })
+
+test.describe('official LINE Gift foundation content', () => {
+  test('renders sourced official data with clear non-official attribution', async ({ page }) => {
+    await page.goto('/about-line-gift')
+
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('認識 LINE 禮物')
+    await expect(page.getByText('900 萬以上', { exact: true })).toBeVisible()
+    await expect(page.getByText('8,000 萬以上', { exact: true })).toBeVisible()
+    await expect(page.getByText('儀式禮物', { exact: true }).first()).toBeVisible()
+    await expect(page.getByText('商務禮物', { exact: true }).first()).toBeVisible()
+    await expect(page.getByText('吉時禮物', { exact: true }).first()).toBeVisible()
+    await expect(page.getByText('情緒禮物', { exact: true }).first()).toBeVisible()
+    await expect(page.getByText(/G9G／盛澄策略顧問非 LINE 官方或官方代理商/)).toBeVisible()
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/about-line-gift$/)
+    await expect(page.getByText('免費品牌健檢')).toHaveCount(0)
+    await expect(page.getByText('scrutator')).toHaveCount(0)
+  })
+
+  test('links to the foundation page from home and academy', async ({ page }) => {
+    await page.goto('/')
+    const homeLink = page.getByRole('link', { name: '完整認識 LINE 禮物' })
+    await expect(homeLink).toHaveAttribute('href', '/about-line-gift')
+
+    await page.goto('/line-gift-academy')
+    const academyLink = page.getByRole('link', { name: /先認識 LINE 禮物/ })
+    await expect(academyLink).toHaveAttribute('href', '/about-line-gift')
+  })
+
+  test('has no horizontal overflow at 390px', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/about-line-gift')
+    const dimensions = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }))
+    expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth)
+  })
+})
