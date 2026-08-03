@@ -83,11 +83,15 @@ describe('AboutLineGiftPage', () => {
       itemListElement: Array<{ item: string }>
     }
     const webPage = schemas.find((schema) => schema['@type'] === 'WebPage')
+    const expectedUrl = new URL(
+      '/about-line-gift',
+      process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+    ).toString()
 
-    expect(breadcrumb.itemListElement.at(-1)?.item).toBe('http://localhost:3000/about-line-gift')
+    expect(breadcrumb.itemListElement.at(-1)?.item).toBe(expectedUrl)
     expect(webPage).toMatchObject({
       name: publication.title,
-      url: 'http://localhost:3000/about-line-gift',
+      url: expectedUrl,
       inLanguage: 'zh-TW',
     })
   })
